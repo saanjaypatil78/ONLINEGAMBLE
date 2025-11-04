@@ -1,0 +1,40 @@
+# Alerting placeholder for Matka backend.
+apiVersion: 1
+kind: AlertPolicy
+metadata:
+  name: matka-backend-alerts
+  namespace: observability
+spec:
+  description: >
+    Baseline rules for latency, matchmaking backlog, and compliance anomalies.
+    Replace routes, receivers, and severity mappings when wiring to Alertmanager/PagerDuty.
+  rules:
+    - alert: MatkaHighLatency
+      expr: histogram_quantile(0.95, sum(rate(matka_http_request_duration_ms_bucket[5m])) by (le)) > 1.5
+      for: 10m
+      labels:
+        severity: warning
+        team: backend
+      annotations:
+        summary: "Backend P95 latency above 1.5s for 10 minutes"
+        runbook: "docs/runtime-observability.md#latency"
+    - alert: MatchmakingBacklog
+      expr: matka_matchmaking_queue_size > 25
+      for: 5m
+      labels:
+        severity: warning
+        team: gameplay
+      annotations:
+        summary: "Matchmaking queue sustained above 25 players"
+        runbook: "docs/runtime-observability.md#matchmaking"
+    - alert: ComplianceSpike
+      expr: sum(rate(matka_compliance_events_total[5m])) by (type) > 10
+      for: 5m
+      labels:
+        severity: critical
+        team: compliance
+      annotations:
+        summary: "Compliance event spike detected (>10/min for a single type)"
+        runbook: "docs/runtime-observability.md#compliance"
+
+# TODO: connect policies to Alertmanager receivers and add silencing windows for planned maintenance.

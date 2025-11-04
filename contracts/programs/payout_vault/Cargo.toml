@@ -1,0 +1,19 @@
+[package]
+name = "payout_vault"
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+
+[lib]
+name = "payout_vault"
+crate-type = ["cdylib", "lib"]
+
+[features]
+default = ["no-entrypoint"]
+no-entrypoint = []
+idl-build = []
+cpi = ["no-entrypoint"]
+test-bpf = []
+
+[dependencies]
+anchor-lang = "0.29.0"

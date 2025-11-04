@@ -1,0 +1,160 @@
+name: ci
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend-checks:
+    runs-on: ubuntu-latest
+    env:
+      CI: "true"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Backend lint
+        run: npm run lint --workspace backend
+
+      - name: Backend tests
+        run: npm run test --workspace backend
+
+      - name: Backend typecheck
+        run: npm run typecheck --workspace backend
+
+  frontend-checks:
+    runs-on: ubuntu-latest
+    env:
+      CI: "true"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Frontend lint
+        run: npm run lint --workspace frontend
+
+      - name: Frontend tests
+        run: npm run test --workspace frontend
+
+      - name: Frontend typecheck
+        run: npm run typecheck --workspace frontend
+
+  contracts-test:
+    runs-on: ubuntu-latest
+    env:
+      CI: "true"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Anchor CLI
+        run: |
+          rustup component add rustfmt
+          cargo install --git https://github.com/coral-xyz/anchor anchor-cli --locked
+        # TODO: pin Anchor CLI version per release plan
+
+      - name: Start local validator
+        run: |
+          solana-test-validator --reset --ledger .anchor/test-ledger &
+          echo $! > validator.pid
+
+      - name: Anchor tests
+        run: anchor test
+        env:
+          ANCHOR_PROVIDER_URL: http://localhost:8899
+
+      - name: Stop validator
+        if: always()
+        run: |
+          if [ -f validator.pid ]; then
+            kill "$(cat validator.pid)" || true
+          fi
+
+  build-artifacts:
+    needs:
+      - backend-checks
+      - frontend-checks
+      - contracts-test
+    runs-on: ubuntu-latest
+    env:
+      CI: "true"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build backend
+        run: npm run build --workspace backend
+
+      - name: Build frontend
+        run: npm run build --workspace frontend
+
+      - name: Install Anchor CLI
+        run: |
+          rustup component add rustfmt
+          cargo install --git https://github.com/coral-xyz/anchor anchor-cli --locked
+        # TODO: reuse cached anchor installation when GitHub Actions adds support.
+
+      - name: Build Anchor programs
+        run: |
+          cd contracts
+          anchor build
+
+      - name: Upload backend artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-dist
+          path: backend/dist
+          if-no-files-found: warn
+
+      - name: Upload frontend artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-build
+          path: frontend/.next
+          if-no-files-found: warn
+
+      - name: Upload Anchor artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: anchor-target
+          path: contracts/target
+          if-no-files-found: warn

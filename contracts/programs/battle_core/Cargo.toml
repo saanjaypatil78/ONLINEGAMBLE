@@ -1,0 +1,19 @@
+[package]
+name = "battle_core"
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+
+[lib]
+name = "battle_core"
+crate-type = ["cdylib", "lib"]
+
+[features]
+default = ["no-entrypoint"]
+no-entrypoint = []
+idl-build = []
+cpi = ["no-entrypoint"]
+test-bpf = []
+
+[dependencies]
+anchor-lang = "0.29.0"

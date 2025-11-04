@@ -1,0 +1,1085 @@
+{
+  "version": "0.1.0",
+  "name": "battle_core",
+  "metadata": {
+    "address": "TODO_REPLACE_WITH_PROGRAM_ID"
+  },
+  "instructions": [
+    {
+      "name": "initializePlatform",
+      "accounts": [
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "platform",
+          "isMut": true,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "platform"
+              }
+            ]
+          }
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false,
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": "InitializePlatformParams"
+          }
+        }
+      ]
+    },
+    {
+      "name": "registerPet",
+      "accounts": [
+        {
+          "name": "owner",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "platform",
+          "isMut": true,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "platform"
+              }
+            ]
+          }
+        },
+        {
+          "name": "pet",
+          "isMut": true,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "pet"
+              },
+              {
+                "kind": "account",
+                "type": "publicKey",
+                "path": "platform"
+              },
+              {
+                "kind": "account",
+                "type": "u64",
+                "path": "platform.nextPetId"
+              }
+            ]
+          }
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false,
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": "RegisterPetParams"
+          }
+        }
+      ]
+    },
+    {
+      "name": "createBattle",
+      "accounts": [
+        {
+          "name": "host",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "platform",
+          "isMut": true,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "platform"
+              }
+            ]
+          }
+        },
+        {
+          "name": "hostPet",
+          "isMut": true,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "pet"
+              },
+              {
+                "kind": "account",
+                "type": "publicKey",
+                "path": "platform"
+              },
+              {
+                "kind": "account",
+                "type": "u64",
+                "path": "hostPet.petId"
+              }
+            ]
+          }
+        },
+        {
+          "name": "battle",
+          "isMut": true,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "battle"
+              },
+              {
+                "kind": "account",
+                "type": "publicKey",
+                "path": "platform"
+              },
+              {
+                "kind": "account",
+                "type": "u64",
+                "path": "platform.nextBattleId"
+              }
+            ]
+          }
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false,
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": "CreateBattleParams"
+          }
+        }
+      ]
+    },
+    {
+      "name": "joinBattle",
+      "accounts": [
+        {
+          "name": "challenger",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "platform",
+          "isMut": true,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "platform"
+              }
+            ]
+          }
+        },
+        {
+          "name": "battle",
+          "isMut": true,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "battle"
+              },
+              {
+                "kind": "account",
+                "type": "publicKey",
+                "path": "platform"
+              },
+              {
+                "kind": "account",
+                "type": "u64",
+                "path": "battle.battleId"
+              }
+            ]
+          }
+        },
+        {
+          "name": "challengerPet",
+          "isMut": true,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "pet"
+              },
+              {
+                "kind": "account",
+                "type": "publicKey",
+                "path": "platform"
+              },
+              {
+                "kind": "account",
+                "type": "u64",
+                "path": "challengerPet.petId"
+              }
+            ]
+          }
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false,
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "submitTurn",
+      "accounts": [
+        {
+          "name": "player",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "platform",
+          "isMut": true,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "platform"
+              }
+            ]
+          }
+        },
+        {
+          "name": "battle",
+          "isMut": true,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "battle"
+              },
+              {
+                "kind": "account",
+                "type": "publicKey",
+                "path": "platform"
+              },
+              {
+                "kind": "account",
+                "type": "u64",
+                "path": "battle.battleId"
+              }
+            ]
+          }
+        },
+        {
+          "name": "clock",
+          "isMut": false,
+          "isSigner": false,
+          "address": "SysvarC1ock11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": "SubmitTurnParams"
+          }
+        }
+      ]
+    },
+    {
+      "name": "resolveBattle",
+      "accounts": [
+        {
+          "name": "platform",
+          "isMut": true,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "platform"
+              }
+            ]
+          }
+        },
+        {
+          "name": "battle",
+          "isMut": true,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "battle"
+              },
+              {
+                "kind": "account",
+                "type": "publicKey",
+                "path": "platform"
+              },
+              {
+                "kind": "account",
+                "type": "u64",
+                "path": "battle.battleId"
+              }
+            ]
+          }
+        },
+        {
+          "name": "hostPet",
+          "isMut": true,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "pet"
+              },
+              {
+                "kind": "account",
+                "type": "publicKey",
+                "path": "platform"
+              },
+              {
+                "kind": "account",
+                "type": "u64",
+                "path": "hostPet.petId"
+              }
+            ]
+          }
+        },
+        {
+          "name": "challengerPet",
+          "isMut": true,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "pet"
+              },
+              {
+                "kind": "account",
+                "type": "publicKey",
+                "path": "platform"
+              },
+              {
+                "kind": "account",
+                "type": "u64",
+                "path": "challengerPet.petId"
+              }
+            ]
+          }
+        },
+        {
+          "name": "clock",
+          "isMut": false,
+          "isSigner": false,
+          "address": "SysvarC1ock11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "forceSettle",
+      "accounts": [
+        {
+          "name": "authority",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "platform",
+          "isMut": true,
+          "isSigner": false,
+          "relations": [
+            "authority"
+          ],
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "platform"
+              }
+            ]
+          }
+        },
+        {
+          "name": "battle",
+          "isMut": true,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "battle"
+              },
+              {
+                "kind": "account",
+                "type": "publicKey",
+                "path": "platform"
+              },
+              {
+                "kind": "account",
+                "type": "u64",
+                "path": "battle.battleId"
+              }
+            ]
+          }
+        },
+        {
+          "name": "hostPet",
+          "isMut": true,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "pet"
+              },
+              {
+                "kind": "account",
+                "type": "publicKey",
+                "path": "platform"
+              },
+              {
+                "kind": "account",
+                "type": "u64",
+                "path": "hostPet.petId"
+              }
+            ]
+          }
+        },
+        {
+          "name": "challengerPet",
+          "isMut": true,
+          "isSigner": false,
+          "isOptional": true
+        }
+      ],
+      "args": []
+    }
+  ],
+  "accounts": [
+    {
+      "name": "PlatformState",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "nextPetId",
+            "type": "u64"
+          },
+          {
+            "name": "nextBattleId",
+            "type": "u64"
+          },
+          {
+            "name": "payoutVault",
+            "type": {
+              "option": "pubkey"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "PetState",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "platform",
+            "type": "pubkey"
+          },
+          {
+            "name": "petId",
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "stats",
+            "type": {
+              "defined": "PetStats"
+            }
+          },
+          {
+            "name": "metadataUri",
+            "type": "string"
+          },
+          {
+            "name": "createdAt",
+            "type": "i64"
+          },
+          {
+            "name": "lastBattleId",
+            "type": {
+              "option": "u64"
+            }
+          },
+          {
+            "name": "committed",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "BattleState",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "platform",
+            "type": "pubkey"
+          },
+          {
+            "name": "battleId",
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "host",
+            "type": "pubkey"
+          },
+          {
+            "name": "hostPet",
+            "type": "pubkey"
+          },
+          {
+            "name": "challenger",
+            "type": {
+              "option": "pubkey"
+            }
+          },
+          {
+            "name": "challengerPet",
+            "type": {
+              "option": "pubkey"
+            }
+          },
+          {
+            "name": "status",
+            "type": {
+              "defined": "BattleStatus"
+            }
+          },
+          {
+            "name": "turnIndex",
+            "type": "u8"
+          },
+          {
+            "name": "hostSubmission",
+            "type": {
+              "option": {
+                "defined": "TurnSubmission"
+              }
+            }
+          },
+          {
+            "name": "challengerSubmission",
+            "type": {
+              "option": {
+                "defined": "TurnSubmission"
+              }
+            }
+          },
+          {
+            "name": "winner",
+            "type": {
+              "option": "pubkey"
+            }
+          },
+          {
+            "name": "createdAt",
+            "type": "i64"
+          },
+          {
+            "name": "resolvedAt",
+            "type": {
+              "option": "i64"
+            }
+          },
+          {
+            "name": "vaultLock",
+            "type": {
+              "option": {
+                "defined": "PayoutLockContext"
+              }
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "types": [
+    {
+      "name": "InitializePlatformParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "payoutVault",
+            "type": {
+              "option": "pubkey"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "RegisterPetParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "stats",
+            "type": {
+              "defined": "PetStats"
+            }
+          },
+          {
+            "name": "metadataUri",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CreateBattleParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "lockIntent",
+            "type": {
+              "option": {
+                "defined": "PayoutLockContext"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "SubmitTurnParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "moveType",
+            "type": {
+              "defined": "PetMove"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "PetStats",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "health",
+            "type": "u16"
+          },
+          {
+            "name": "attack",
+            "type": "u16"
+          },
+          {
+            "name": "defense",
+            "type": "u16"
+          },
+          {
+            "name": "speed",
+            "type": "u16"
+          }
+        ]
+      }
+    },
+    {
+      "name": "TurnSubmission",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "moveType",
+            "type": {
+              "defined": "PetMove"
+            }
+          },
+          {
+            "name": "submittedBy",
+            "type": "pubkey"
+          },
+          {
+            "name": "submittedAt",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PayoutLockContext",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "vaultProgram",
+            "type": "pubkey"
+          },
+          {
+            "name": "vaultAccount",
+            "type": "pubkey"
+          },
+          {
+            "name": "lockedAmount",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "BattleStatus",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Waiting"
+          },
+          {
+            "name": "Active"
+          },
+          {
+            "name": "Completed"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PetMove",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Strike"
+          },
+          {
+            "name": "Guard"
+          },
+          {
+            "name": "Blitz"
+          }
+        ]
+      }
+    }
+  ],
+  "events": [
+    {
+      "name": "PlatformInitialized",
+      "fields": [
+        {
+          "name": "authority",
+          "type": "pubkey",
+          "index": false
+        },
+        {
+          "name": "payoutVault",
+          "type": {
+            "option": "pubkey"
+          },
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "PetRegistered",
+      "fields": [
+        {
+          "name": "owner",
+          "type": "pubkey",
+          "index": false
+        },
+        {
+          "name": "pet",
+          "type": "pubkey",
+          "index": false
+        },
+        {
+          "name": "petId",
+          "type": "u64",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "BattleCreated",
+      "fields": [
+        {
+          "name": "battle",
+          "type": "pubkey",
+          "index": false
+        },
+        {
+          "name": "battleId",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "host",
+          "type": "pubkey",
+          "index": false
+        },
+        {
+          "name": "hostPet",
+          "type": "pubkey",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "BattleJoined",
+      "fields": [
+        {
+          "name": "battle",
+          "type": "pubkey",
+          "index": false
+        },
+        {
+          "name": "battleId",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "challenger",
+          "type": "pubkey",
+          "index": false
+        },
+        {
+          "name": "challengerPet",
+          "type": "pubkey",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "TurnSubmitted",
+      "fields": [
+        {
+          "name": "battle",
+          "type": "pubkey",
+          "index": false
+        },
+        {
+          "name": "battleId",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "submitter",
+          "type": "pubkey",
+          "index": false
+        },
+        {
+          "name": "round",
+          "type": "u8",
+          "index": false
+        },
+        {
+          "name": "moveType",
+          "type": {
+            "defined": "PetMove"
+          },
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "BattleResolved",
+      "fields": [
+        {
+          "name": "battle",
+          "type": "pubkey",
+          "index": false
+        },
+        {
+          "name": "battleId",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "winner",
+          "type": {
+            "option": "pubkey"
+          },
+          "index": false
+        },
+        {
+          "name": "hostScore",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "challengerScore",
+          "type": "u64",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "BattleForceSettled",
+      "fields": [
+        {
+          "name": "battle",
+          "type": "pubkey",
+          "index": false
+        },
+        {
+          "name": "authority",
+          "type": "pubkey",
+          "index": false
+        }
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "MetadataUriTooLong",
+      "msg": "Provided metadata URI exceeds the maximum allowed length"
+    },
+    {
+      "code": 6001,
+      "name": "InvalidStats",
+      "msg": "Provided pet statistics are invalid"
+    },
+    {
+      "code": 6002,
+      "name": "Overflow",
+      "msg": "Arithmetic overflow detected"
+    },
+    {
+      "code": 6003,
+      "name": "Unauthorized",
+      "msg": "Signer is not authorised for this action"
+    },
+    {
+      "code": 6004,
+      "name": "PetOwnershipMismatch",
+      "msg": "Pet is not owned by the signer"
+    },
+    {
+      "code": 6005,
+      "name": "PetUnavailable",
+      "msg": "Pet is currently locked in another battle"
+    },
+    {
+      "code": 6006,
+      "name": "BattleNotWaiting",
+      "msg": "Battle is not accepting challengers"
+    },
+    {
+      "code": 6007,
+      "name": "DuplicateParticipant",
+      "msg": "Battle already contains this participant"
+    },
+    {
+      "code": 6008,
+      "name": "BattleNotActive",
+      "msg": "Battle is not active"
+    },
+    {
+      "code": 6009,
+      "name": "BattleMissingChallenger",
+      "msg": "Battle is missing challenger data"
+    },
+    {
+      "code": 6010,
+      "name": "DuplicateTurnSubmission",
+      "msg": "Turn already submitted for this round"
+    },
+    {
+      "code": 6011,
+      "name": "TurnsIncomplete",
+      "msg": "All turns must be submitted before resolution"
+    },
+    {
+      "code": 6012,
+      "name": "PetMismatch",
+      "msg": "Pet account does not match the battle record"
+    }
+  ]
+}

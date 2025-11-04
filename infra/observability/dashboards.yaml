@@ -1,0 +1,46 @@
+# Placeholder dashboard definitions for Matka backend observability.
+apiVersion: 1
+kind: ObservabilityLayout
+metadata:
+  name: matka-backend-dashboard
+  namespace: observability
+spec:
+  description: >
+    Draft Grafana dashboard covering HTTP performance, matchmaking queue health,
+    and compliance event throughput. Replace data sources with production equivalents.
+  panels:
+    - title: HTTP Request Duration (p95)
+      type: timeseries
+      datasource: ${PROM_DATASOURCE:-Prometheus}
+      queries:
+        - expr: histogram_quantile(0.95, sum(rate(matka_http_request_duration_ms_bucket[5m])) by (le))
+      thresholds:
+        - value: 1000
+          color: yellow
+        - value: 2500
+          color: red
+      notes: >
+        Highlights latency regressions. Once OpenTelemetry traces are available,
+        link this panel to exemplar traces for deep dives.
+    - title: Matchmaking Queue Depth
+      type: stat
+      datasource: ${PROM_DATASOURCE:-Prometheus}
+      queries:
+        - expr: matka_matchmaking_queue_size
+      notes: >
+        Alert when sustained above 25 players for more than 5 minutes.
+    - title: Compliance Events Per Minute
+      type: bar
+      datasource: ${PROM_DATASOURCE:-Prometheus}
+      queries:
+        - expr: sum(rate(matka_compliance_events_total[1m])) by (type)
+      notes: >
+        Breaks down the compliance events by type. Use to ensure KYC webhooks are flowing.
+
+  annotations:
+    - name: Deployments
+      datasource: ${PROM_DATASOURCE:-Prometheus}
+      expr: changes(ci_deployments_total[1h])
+      description: Anchor program or backend deploy markers.
+
+# TODO: Replace namespace/spec schema with actual Grafana provisioning once the stack is formalised.

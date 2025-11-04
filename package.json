@@ -1,0 +1,38 @@
+{
+  "name": "matka-solana-mvp",
+  "private": true,
+  "version": "0.0.1",
+  "description": "Monorepo scaffold for the Solana Axie-style MVP.",
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "bootstrap": "bash scripts/bootstrap.sh",
+    "lint": "npm run lint --workspaces",
+    "build": "npm run build --workspaces",
+    "test": "npm run test --workspaces",
+    "format": "prettier --check ."
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^6.19.1",
+    "@typescript-eslint/parser": "^6.19.1",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.3",
+    "prettier": "^3.1.1"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "solana",
+    "anchor",
+    "nextjs",
+    "monorepo"
+  ],
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+}

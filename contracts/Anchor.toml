@@ -1,0 +1,23 @@
+[workspace]
+members = [
+  "programs/battle_core",
+  "programs/payout_vault"
+]
+
+[programs.localnet]
+battle_core = "BtLCr1111111111111111111111111111111111111111"
+payout_vault = "PytVlt1111111111111111111111111111111111111111"
+
+[programs.devnet]
+battle_core = "BtLCr1111111111111111111111111111111111111111"
+payout_vault = "PytVlt1111111111111111111111111111111111111111"
+
+[registry]
+url = "https://api.apr.dev"
+
+[provider]
+cluster = "Localnet"
+wallet = "~/.config/solana/id.json"
+
+[scripts]
+test = "anchor test"

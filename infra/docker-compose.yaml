@@ -1,0 +1,85 @@
+version: "3.9"
+
+services:
+  backend:
+    image: node:18
+    working_dir: /app/backend
+    volumes:
+      - ../backend:/app/backend
+      - ../package.json:/app/package.json
+      - ../package-lock.json:/app/package-lock.json
+    command: ["npm", "run", "dev", "--workspace", "backend"]
+    environment:
+      - PORT=4000
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - NODE_ENV=development
+      - COMPLIANCE_STORAGE_URL=${COMPLIANCE_STORAGE_URL:-file://./tmp/compliance-events.log}
+      - ENABLE_PROMETHEUS_METRICS=${ENABLE_PROMETHEUS_METRICS:-true}
+      - SOLANA_RPC_URL=${SOLANA_RPC_URL:-https://api.devnet.solana.com}
+    ports:
+      - "4000:4000"
+    depends_on:
+      - prometheus
+    # TODO: externalize secrets and program IDs via env files or secret manager before production.
+
+  frontend:
+    image: node:18
+    working_dir: /app/frontend
+    volumes:
+      - ../frontend:/app/frontend
+      - ../package.json:/app/package.json
+      - ../package-lock.json:/app/package-lock.json
+    command: ["npm", "run", "dev", "--workspace", "frontend"]
+    environment:
+      - NEXT_PUBLIC_BACKEND_URL=http://backend:4000
+      - NEXT_PUBLIC_OBSERVABILITY_ENDPOINT=http://prometheus:9090
+      - NEXT_PUBLIC_LOG_LEVEL=${NEXT_PUBLIC_LOG_LEVEL:-info}
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    # TODO: add reverse proxy (nginx) service once TLS/offloading requirements are defined.
+
+  prometheus:
+    image: prom/prometheus:v2.53.0
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.retention.time=24h"
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./observability/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    # TODO: replace single-node Prometheus with managed metrics stack in production.
+
+  loki:
+    image: grafana/loki:2.9.4
+    command: ["-config.file=/etc/loki/local-config.yaml"]
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./observability/loki-local-config.yaml:/etc/loki/local-config.yaml:ro
+    # TODO: integrate with production-grade log aggregation (ELK, Loki stack, or Datadog).
+
+  grafana:
+    image: grafana/grafana:10.4.1
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=dev-password
+    volumes:
+      - grafana-storage:/var/lib/grafana
+    depends_on:
+      - prometheus
+      - loki
+    # TODO: seed Grafana dashboards using infra/observability/dashboards.yaml once provisioning pipeline is ready.
+
+  solana-localnet:
+    image: solanalabs/solana:v1.17.0
+    command: ["solana-test-validator", "--reset"]
+    ports:
+      - "8899:8899"
+      - "8900:8900"
+    # TODO: mount ledger volume if persistence is required
+
+volumes:
+  grafana-storage: {}
